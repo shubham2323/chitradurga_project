@@ -40,15 +40,20 @@ We implemented Stratified Group 5-Fold Cross-Validation (StratifiedGroupKFold) g
 
 ### 3.1 Ground Truth Ingestion & Dynamic Class Thresholding
 To prevent the classifier from fitting unrepresentative decision boundaries on scarce classes, an empirical rule was applied: Classes supported by >25 verified field polygons were retained as individual target classes; all remaining classes were aggregated into 'Others'.
+
 This established 4 target classes:
+
 Arecanut: Perennial horticultural plantation; high, stable biomass year-round; localized in canal/borewell-irrigated belts (Hosadurga, Holalkere).
+
 Maize: High-biomass cereal; rapid vegetative surge through July/August; high peak NDVI (>0.80); extensive across rainfed taluks.
+
 Ragi: Low-to-moderate biomass staple cereal; later vegetative peak than maize; lower NIR reflectance.
+
 Others: Encompasses minority crops (e.g., smallholder pulses, vegetables, minor millets).
+
 <img width="590" height="277" alt="Screenshot 2026-11-08 022719" src="https://github.com/user-attachments/assets/77acb4f8-91a2-4146-8b92-a308f02961bf" />
 
 ### 3.2 Spatial Group Cross-Validation Performance (LightGBM)
-## insert cross val image and confusion matrix image on github
 <img width="500" height="411" alt="Screenshot 2026-11-07 230724" src="https://github.com/user-attachments/assets/f3bc7d2a-c748-447d-aab8-bc345d02d699" />
 <img width="500" height="411" alt="Screenshot 2026-11-08 024104" src="https://github.com/user-attachments/assets/8272039c-4cb9-42ca-8401-8dcea9a15c55" />
 
@@ -70,28 +75,27 @@ Model predictions were generated using block-wise parallel inference on the Chit
 To move beyond single-label deterministic assumptions, prediction confidence was calculated for every pixel using Normalized Shannon Entropy.
 ## 5. Lightweight MVP Implementation (Folium Architecture)
 The MVP delivery requirement was met by generating a standalone, interactive HTML map (chitradurga_crop_map_2026.html) using Python's folium library.
-Code
-chitradurga_crop_map_2026.html
-├── Leaflet Map Canvas (Google Satellite Hybrid & CartoDB Positron Basemaps)
-├── Classification Layer (Dynamic RGBA PNG: Arecanut, Maize, Ragi, Others)
-├── Uncertainty Heatmap (Dynamic RGBA PNG: Normalized Shannon Entropy RdYlGn_r)
-├── Layer Control (Top-Right Toggle for Real-Time Inspection)
-└── Floating Dashboard Panel (Bottom-Left)
-    ├── Thematic Class Color Swatches
-    ├── Entropy Scale Gradient Bar (0.0 Certain -> 1.0 Ambiguous)
-    └── Dynamic HTML Table (Directly bound to area_stats.csv)
+
+<img width="633" height="224" alt="Screenshot 2026-11-08 030325" src="https://github.com/user-attachments/assets/d1cc1d61-2350-4605-b192-33f805aa4a17" />
+    
 Key Technical Aspects of the MVP:
+
 Memory-Safe RGBA Raster Export: The classification and entropy GeoTIFFs are converted into web-optimized, georeferenced RGBA PNG overlays. Non-agricultural pixels are assigned an alpha value of 0 (100% transparent), allowing underlying satellite basemaps to remain visible.
+
 Dynamic CSV Data Binding: The dashboard panel parses area_stats.csv directly at generation time, formatting and rendering area metrics without hardcoded values.
+
 Zero Server Dependency: The output is completely self-contained, requiring no running Python server, Streamlit instance, or backend database, enabling rapid distribution to field stakeholders.
 ## 6. Risks, Portability & Production Scaling Roadmap
 ### 6.1 Portability Risks & Model Limitations
 Temporal Transferability: The decision boundaries learned for Kharif 2026 cannot be applied directly to Rabi or Summer seasons due to changes in crop mixes (e.g., Bengal Gram, Sunflower), and altered phenology.
+
 Geographic Portability: Applying this model to a very different region might not work as the seasonality(duration) of same crops can change, and the list of crops might change too.
 ### 6.2 Two-Week Production Expansion Roadmap
 If granted additional Time and Support:
+
 Extensive Data Collection:
 With more data samples, both for target and 'other' crops(equally important), and accurate sowing and harvesting dates, the model should perform significantly better. Data points should have accurate polygon boundaries.
+
 Explore Other Data Sources:
 Explore data sources with better temporal and spatial resolution. 
 Try giving more importance to SAR based features as Kharif season affects optical data very harshly.
